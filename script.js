@@ -225,26 +225,28 @@ function computeReadinessScore({ monthlyNeeded, totalSalary, overloadedPeople, h
   const needsRatio = totalSalary > 0 ? (monthlyNeeded / totalSalary) * 100 : 0;
   const lowImpactThreshold = 67;
   const pickupThreshold = 75;
+  const lowImpactSlope = 0.28; // keeps penalty in the "10s" through 67%
+  const midImpactSlope = 1.35; // keeps penalty in the "20s" through 75%
+  const highImpactSlope = 2.8; // sharp pickup after 75%
 
   let ratioPenalty;
   if (needsRatio <= lowImpactThreshold) {
-    ratioPenalty = needsRatio * 0.2;
+    ratioPenalty = needsRatio * lowImpactSlope;
   } else if (needsRatio <= pickupThreshold) {
-    ratioPenalty = lowImpactThreshold * 0.2 + (needsRatio - lowImpactThreshold) * 1.5;
+    ratioPenalty = lowImpactThreshold * lowImpactSlope + (needsRatio - lowImpactThreshold) * midImpactSlope;
   } else {
     ratioPenalty =
-      lowImpactThreshold * 0.2 +
-      (pickupThreshold - lowImpactThreshold) * 1.5 +
-      (needsRatio - pickupThreshold) * 2.8;
+      lowImpactThreshold * lowImpactSlope +
+      (pickupThreshold - lowImpactThreshold) * midImpactSlope +
+      (needsRatio - pickupThreshold) * highImpactSlope;
   }
   ratioPenalty = Math.min(60, ratioPenalty);
   const overloadPenalty = overloadedPeople.length * 25;
-  const burdenPenalty = heavyBurdenPeople.length * 12;
   const gapPenalty = totalSalary > 0 ? Math.min(25, (uncoveredGap / totalSalary) * 100 * 1.2) : uncoveredGap > 0 ? 25 : 0;
   const methodBonus = method === "proportional" && heavyBurdenPeople.length === 0 ? 4 : 0;
   const targetMetBonus = monthlyNeeded === 0 ? 10 : 0;
 
-  let score = 100 - ratioPenalty - overloadPenalty - burdenPenalty - gapPenalty + methodBonus + targetMetBonus;
+  let score = 100 - ratioPenalty - overloadPenalty - gapPenalty + methodBonus + targetMetBonus;
   score = clamp(Math.round(score), 0, 100);
 
   let label = "Strong";
@@ -258,7 +260,6 @@ function computeReadinessScore({ monthlyNeeded, totalSalary, overloadedPeople, h
     "Base score: 100",
     `Need vs income impact: -${ratioPenalty.toFixed(1)} (${needsRatio.toFixed(1)}% of monthly income needed)`,
     `Negative personal balance risk: -${overloadPenalty} (${overloadedPeople.length} contributor(s))`,
-    `High burden impact: -${burdenPenalty} (${heavyBurdenPeople.length} contributor(s) above 50% burden)`,
     `Guardrail shortfall impact: -${gapPenalty.toFixed(1)} (${uncoveredGap > 0 ? "target not fully covered" : "no shortfall"})`,
   ];
 
@@ -288,7 +289,6 @@ function renderScoreCard(scoreData) {
             <p><strong>How the score works</strong></p>
             <p><strong>Need vs income:</strong> Low impact up to 67%, then ramps, with a sharper penalty after 75%.</p>
             <p><strong>Negative balance risk:</strong> Penalises plans where someone goes below 0 personal money.</p>
-            <p><strong>High burden:</strong> Penalises contributors above 50% salary burden.</p>
             <p><strong>Guardrail shortfall:</strong> Penalises when min/max limits prevent reaching target.</p>
             <p><strong>Bonuses:</strong> Small boost when proportional split is balanced, plus target-already-met bonus.</p>
           </div>
@@ -563,8 +563,8 @@ function loadDemoData() {
 }
 
 function resetPlan() {
-  currencyEl.value = "USD";
-  methodEl.value = "equal";
+  currencyEl.value = "GBP";
+  methodEl.value = "proportional";
   currentBalanceEl.value = "0";
   targetBalanceEl.value = "0";
   minContributionPctEl.value = "0";
