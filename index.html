@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Family joint account planner</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="hero">
+        <p class="eyebrow">FairNest</p>
+        <h1>Monthly joint account planner</h1>
+        <p>
+          Decide a fair monthly contribution plan in under a minute. Add contributors, pick a split method, and review impact on each person.
+        </p>
+      </header>
+
+      <div class="workspace">
+        <section class="card setup-panel" aria-labelledby="inputs-heading">
+          <div class="card-head">
+            <h2 id="inputs-heading">Set up your plan</h2>
+            <div class="card-actions">
+              <button type="button" id="loadDemoBtn" class="btn tertiary btn-compact">Load realistic example</button>
+              <button type="button" id="resetPlanBtn" class="btn tertiary btn-compact">Reset plan</button>
+              <span class="inline-tip">
+                <button type="button" class="info-trigger" aria-label="Plan setup tip">i</button>
+                <span class="score-tooltip tip-tooltip" role="tooltip">
+                  Tip: Use the example first to see how equal vs proportional split changes personal money left.
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <div class="grid two-col">
+            <label class="field">
+              <span>Currency for inputs and results</span>
+              <select id="currency">
+                <option value="USD" selected>USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+                <option value="JPY">JPY (¥)</option>
+                <option value="CAD">CAD (C$)</option>
+                <option value="AUD">AUD (A$)</option>
+                <option value="CHF">CHF (Fr)</option>
+                <option value="SEK">SEK (kr)</option>
+                <option value="NOK">NOK (kr)</option>
+                <option value="DKK">DKK (kr)</option>
+                <option value="INR">INR (₹)</option>
+                <option value="SGD">SGD (S$)</option>
+                <option value="NZD">NZD (NZ$)</option>
+                <option value="BRL">BRL (R$)</option>
+                <option value="ZAR">ZAR (R)</option>
+                <option value="MXN">MXN ($)</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>How should contributions be split?</span>
+              <select id="contributionMethod">
+                <option value="equal" selected>Equally split</option>
+                <option value="proportional">Proportional to salary</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="grid two-col">
+            <label class="field">
+              <span>Current joint account balance</span>
+              <input id="currentBalance" type="number" min="0" step="0.01" value="0" />
+            </label>
+
+            <label class="field">
+            <span>Target joint account balance</span>
+              <input id="targetBalance" type="number" min="0" step="0.01" value="0" />
+            </label>
+          </div>
+          <div class="fairness-box">
+            <h3>Fairness guardrails</h3>
+            <p>Set optional salary-based limits for each person's contribution in both split modes.</p>
+            <div class="grid two-col">
+              <label class="field">
+                <span>Minimum contribution (% of salary)</span>
+                <input id="minContributionPct" type="number" min="0" max="100" step="0.1" value="0" />
+              </label>
+              <label class="field">
+                <span>Maximum contribution (% of salary)</span>
+                <input id="maxContributionPct" type="number" min="0" max="100" step="0.1" value="100" />
+              </label>
+            </div>
+          </div>
+
+          <div class="contributors">
+            <div class="contributors-head">
+              <h3>Contributors</h3>
+              <button type="button" id="addContributorBtn" class="btn secondary">+ Add contributor</button>
+            </div>
+            <div id="contributorsList" class="contributors-list"></div>
+          </div>
+
+          <div class="actions">
+            <button type="button" id="calculateBtn" class="btn primary">Calculate contributions</button>
+          </div>
+        </section>
+
+        <div class="insights-column">
+          <section class="card results-panel" aria-labelledby="results-heading">
+            <h2 id="results-heading">Plan results</h2>
+            <div id="scoreCard" class="score-card hidden"></div>
+            <div id="resultState" class="result-state muted">
+              <strong>No plan yet.</strong> Load the example or enter your own values, then click <strong>Calculate contributions</strong>.
+            </div>
+            <div id="results" class="results"></div>
+            <div id="comparison" class="comparison hidden"></div>
+          </section>
+
+          <section class="card detail-panel" aria-labelledby="method-details-heading">
+            <h2 id="method-details-heading">How the split works</h2>
+            <div class="method-detail-grid">
+              <article class="method-detail">
+                <h3>Equal split</h3>
+                <p>Everyone contributes the same amount: <strong>(target - current balance) / number of contributors</strong>.</p>
+              </article>
+              <article class="method-detail">
+                <h3>Proportional split</h3>
+                <p>Each person contributes based on salary share, so higher earners contribute more while percentages stay aligned.</p>
+              </article>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+    <footer class="site-footer">
+      <p>
+        Created by
+        <a href="https://franzvitulli.com" target="_blank" rel="noopener noreferrer">Franz Vitulli</a>
+      </p>
+    </footer>
+
+    <template id="contributorTemplate">
+      <article class="contributor-row">
+        <label class="field">
+          <span>Name</span>
+          <input type="text" class="contributor-name" placeholder="e.g., Alex" />
+        </label>
+        <label class="field">
+          <span>Monthly salary</span>
+          <input type="number" min="0" step="0.01" class="contributor-salary" placeholder="0.00" />
+        </label>
+        <button type="button" class="btn danger remove-btn" aria-label="Remove contributor">Remove</button>
+      </article>
+    </template>
+
+    <script src="script.js"></script>
+  </body>
+</html>
