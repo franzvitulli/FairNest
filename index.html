@@ -79,15 +79,32 @@
           <div class="fairness-box">
             <h3>Fairness guardrails</h3>
             <p>Set optional salary-based limits for each person's contribution in both split modes.</p>
-            <div class="grid two-col">
-              <label class="field">
-                <span>Minimum contribution (% of salary)</span>
-                <input id="minContributionPct" type="number" min="0" max="100" step="0.1" value="0" />
-              </label>
-              <label class="field">
-                <span>Maximum contribution (% of salary)</span>
-                <input id="maxContributionPct" type="number" min="0" max="100" step="0.1" value="100" />
-              </label>
+            <div class="guardrail-slider">
+              <div class="guardrail-values">
+                <p>Min: <output id="minContributionPctValue">0%</output></p>
+                <p>Max: <output id="maxContributionPctValue">100%</output></p>
+              </div>
+              <div class="range-track">
+                <div id="guardrailRangeActive" class="range-active" aria-hidden="true"></div>
+                <input
+                  id="minContributionPct"
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="0.5"
+                  value="0"
+                  aria-label="Minimum contribution percentage"
+                />
+                <input
+                  id="maxContributionPct"
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="0.5"
+                  value="100"
+                  aria-label="Maximum contribution percentage"
+                />
+              </div>
             </div>
           </div>
 

@@ -15,6 +15,9 @@ const currentBalanceEl = document.getElementById("currentBalance");
 const targetBalanceEl = document.getElementById("targetBalance");
 const minContributionPctEl = document.getElementById("minContributionPct");
 const maxContributionPctEl = document.getElementById("maxContributionPct");
+const minContributionPctValueEl = document.getElementById("minContributionPctValue");
+const maxContributionPctValueEl = document.getElementById("maxContributionPctValue");
+const guardrailRangeActiveEl = document.getElementById("guardrailRangeActive");
 
 function addContributor(defaultName = "", defaultSalary = "") {
   const node = contributorTemplate.content.firstElementChild.cloneNode(true);
@@ -95,6 +98,36 @@ function renderInitialState() {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(value, max));
+}
+
+function formatPctForLabel(value) {
+  return Number.isInteger(value) ? `${value}%` : `${value.toFixed(1)}%`;
+}
+
+function syncGuardrailSlider(changedHandle) {
+  let minPct = clamp(Number(minContributionPctEl.value), 0, 100);
+  let maxPct = clamp(Number(maxContributionPctEl.value), 0, 100);
+
+  if (changedHandle === "min" && minPct > maxPct) {
+    maxPct = minPct;
+  } else if (changedHandle === "max" && maxPct < minPct) {
+    minPct = maxPct;
+  }
+
+  minContributionPctEl.value = String(minPct);
+  maxContributionPctEl.value = String(maxPct);
+
+  if (minContributionPctValueEl) {
+    minContributionPctValueEl.textContent = formatPctForLabel(minPct);
+  }
+  if (maxContributionPctValueEl) {
+    maxContributionPctValueEl.textContent = formatPctForLabel(maxPct);
+  }
+
+  if (guardrailRangeActiveEl) {
+    guardrailRangeActiveEl.style.left = `${minPct}%`;
+    guardrailRangeActiveEl.style.width = `${Math.max(0, maxPct - minPct)}%`;
+  }
 }
 
 function parseGuardrails() {
@@ -554,6 +587,7 @@ function loadDemoData() {
   targetBalanceEl.value = "3600";
   minContributionPctEl.value = "0";
   maxContributionPctEl.value = "35";
+  syncGuardrailSlider();
 
   resetContributors();
   addContributor("Maya", "6200");
@@ -569,6 +603,7 @@ function resetPlan() {
   targetBalanceEl.value = "0";
   minContributionPctEl.value = "0";
   maxContributionPctEl.value = "100";
+  syncGuardrailSlider();
 
   resetContributors();
   addContributor("Member 1", "0");
@@ -580,5 +615,7 @@ addContributorBtn.addEventListener("click", () => addContributor());
 calculateBtn.addEventListener("click", calculate);
 loadDemoBtn.addEventListener("click", loadDemoData);
 resetPlanBtn.addEventListener("click", resetPlan);
+minContributionPctEl.addEventListener("input", () => syncGuardrailSlider("min"));
+maxContributionPctEl.addEventListener("input", () => syncGuardrailSlider("max"));
 
 resetPlan();

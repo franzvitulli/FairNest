@@ -89,7 +89,7 @@ body::before {
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(330px, 1.02fr) minmax(380px, 1.1fr);
+  grid-template-columns: minmax(320px, calc(38.2% + 20px)) minmax(0, calc(61.8% - 20px));
   gap: 1rem;
   align-items: start;
 }
@@ -220,6 +220,104 @@ button:focus-visible {
   margin: 0 0 0.6rem;
   color: var(--muted);
   font-size: 0.88rem;
+}
+
+.guardrail-slider {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.guardrail-values {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.guardrail-values p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #1f3561;
+  font-weight: 700;
+}
+
+.guardrail-values output {
+  color: #0b4ab7;
+}
+
+.range-track {
+  position: relative;
+  height: 2rem;
+}
+
+.range-track::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 0.35rem;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: #d7e4fd;
+}
+
+.range-active {
+  position: absolute;
+  top: 50%;
+  height: 0.35rem;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  left: 0%;
+  width: 100%;
+}
+
+.range-track input[type="range"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  pointer-events: none;
+}
+
+.range-track input[type="range"]::-webkit-slider-runnable-track {
+  height: 0.35rem;
+  background: transparent;
+}
+
+.range-track input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  margin-top: -0.33rem;
+  border-radius: 999px;
+  border: 2px solid #1d4ed8;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(29, 78, 216, 0.28);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.range-track input[type="range"]::-moz-range-track {
+  height: 0.35rem;
+  background: transparent;
+}
+
+.range-track input[type="range"]::-moz-range-thumb {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 999px;
+  border: 2px solid #1d4ed8;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(29, 78, 216, 0.28);
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 .contributors {
