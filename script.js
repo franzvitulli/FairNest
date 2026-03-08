@@ -223,7 +223,21 @@ function enrichPeople(people) {
 
 function computeReadinessScore({ monthlyNeeded, totalSalary, overloadedPeople, heavyBurdenPeople, method, uncoveredGap }) {
   const needsRatio = totalSalary > 0 ? (monthlyNeeded / totalSalary) * 100 : 0;
-  const ratioPenalty = Math.min(60, needsRatio * 0.9);
+  const lowImpactThreshold = 67;
+  const pickupThreshold = 75;
+
+  let ratioPenalty;
+  if (needsRatio <= lowImpactThreshold) {
+    ratioPenalty = needsRatio * 0.2;
+  } else if (needsRatio <= pickupThreshold) {
+    ratioPenalty = lowImpactThreshold * 0.2 + (needsRatio - lowImpactThreshold) * 1.5;
+  } else {
+    ratioPenalty =
+      lowImpactThreshold * 0.2 +
+      (pickupThreshold - lowImpactThreshold) * 1.5 +
+      (needsRatio - pickupThreshold) * 2.8;
+  }
+  ratioPenalty = Math.min(60, ratioPenalty);
   const overloadPenalty = overloadedPeople.length * 25;
   const burdenPenalty = heavyBurdenPeople.length * 12;
   const gapPenalty = totalSalary > 0 ? Math.min(25, (uncoveredGap / totalSalary) * 100 * 1.2) : uncoveredGap > 0 ? 25 : 0;
@@ -272,7 +286,7 @@ function renderScoreCard(scoreData) {
           <button type="button" class="info-trigger" aria-label="How this score is calculated">i</button>
           <div class="score-tooltip" role="tooltip">
             <p><strong>How the score works</strong></p>
-            <p><strong>Need vs income:</strong> Higher required % of household income lowers score.</p>
+            <p><strong>Need vs income:</strong> Low impact up to 67%, then ramps, with a sharper penalty after 75%.</p>
             <p><strong>Negative balance risk:</strong> Penalises plans where someone goes below 0 personal money.</p>
             <p><strong>High burden:</strong> Penalises contributors above 50% salary burden.</p>
             <p><strong>Guardrail shortfall:</strong> Penalises when min/max limits prevent reaching target.</p>
